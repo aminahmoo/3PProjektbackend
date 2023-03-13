@@ -1,20 +1,28 @@
 package de.aminahmoo.pprojektbackend;
 
+import de.aminahmoo.pprojektbackend.database.DatabaseHandler.Database;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.sql.SQLException;
 
 @SpringBootApplication
 public class Application {
 
-	private final Application instance;
+	private static Application instance;
+	private final Dotenv dotenv;
+	private final Database database;
 
-	public Application() {
+	public Application() throws SQLException {
 		instance = this;
 
-		//init here
+		//init stuff here
+		dotenv = Dotenv.load();
+		database = new Database();
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException{
 		Application application = new Application();
 		application.startApplication(args);
 	}
@@ -23,7 +31,15 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 
-	public Application getInstance() {
+	public static Application getInstance() {
 		return instance;
+	}
+
+	public Dotenv getDotenv() {
+		return dotenv;
+	}
+
+	public Database getDatabase() {
+		return database;
 	}
 }
