@@ -20,5 +20,6 @@ dependencies {
 	//testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'com.zaxxer:HikariCP:5.0.1'
 	implementation 'io.github.cdimascio:dotenv-kotlin:6.4.1'
+	implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.28'
 }
 

@@ -6,13 +6,20 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.sql.SQLException;
+import java.sql.Time;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 public class Application {
 
 	private static Application instance;
 	private final Dotenv dotenv;
-	private final Database database;
+	private Database database;
 
 	public Application() throws SQLException {
 		instance = this;
@@ -25,6 +32,7 @@ public class Application {
 	public static void main(String[] args) throws SQLException{
 		Application application = new Application();
 		application.startApplication(args);
+
 	}
 
 	private void startApplication(String[] args) {

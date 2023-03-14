@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class Database {
 
@@ -37,16 +38,16 @@ public class Database {
         }
     }
 
+
     private void initHikari() throws SQLException {
         hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:sqlserver://"+
-                Application.getInstance().getDotenv().get("DB_HOSTNAME")+";"+
-                "encrypt=true;"+
-                "databaseName="+Application.getInstance().getDotenv().get("DB_DATABASE")+";"+
-                "user="+Application.getInstance().getDotenv().get("DB_USERNAME")+";" +
-                "password="+Application.getInstance().getDotenv().get("DB_PASSWORD")+";"+
-                "integratedSecurity=true;");
-        hikariConfig.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDataSource");
+        hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        hikariConfig.setJdbcUrl("jdbc:mysql://"+
+                Application.getInstance().getDotenv().get("DB_HOSTNAME")
+                +"/"+
+                Application.getInstance().getDotenv().get("DB_DATABASE"));
+        hikariConfig.setUsername(Application.getInstance().getDotenv().get("DB_USERNAME"));
+        hikariConfig.setPassword(Application.getInstance().getDotenv().get("DB_PASSWORD"));
         hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -56,9 +57,32 @@ public class Database {
         initDatabaseEntries();
     }
 
+
+    /* for SQLExpress:
+    private void initHikari() throws SQLException {
+        hikariConfig = new HikariConfig();
+        hikariConfig.setJdbcUrl("jdbc:sqlserver://"+
+                Application.getInstance().getDotenv().get("DB_HOSTNAME")+";"+
+                "encrypt=true;"+
+                "databaseName="+Application.getInstance().getDotenv().get("DB_DATABASE")+";"+
+                "user="+Application.getInstance().getDotenv().get("DB_USERNAME")+";" +
+                "password="+Application.getInstance().getDotenv().get("DB_PASSWORD")+";"+
+                "integratedSecurity=true;" +
+                "trustServerCertificate=true;");
+        hikariConfig.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDataSource");
+        hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        hikariDataSource = new HikariDataSource(hikariConfig);
+
+        testDataSource();
+        initDatabaseEntries();
+    }
+     */
     public void initDatabaseEntries() {
         try (Connection conn = hikariDataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS test_table (name VARCHAR(20))")) {
+             PreparedStatement ps = conn.prepareStatement("CREATE TABLE IF NOT EXISTS test_table (id INT, " +
+                     "name VARCHAR(20), PRIMARY KEY(id))")) {
             ps.executeUpdate();
         } catch (SQLException e) {
             logger.error("could not create table: test_table", e);
